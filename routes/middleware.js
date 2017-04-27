@@ -62,6 +62,7 @@ exports.authorizeRoute = function (req, res, next) {
 
 	// checks for apikey
 	const apikey = 'apikey';
+	console.log('apikey', req.get(apikey))
 	if (req.get(apikey) || req.query[apikey] || req.body[apikey]) {
 		return passport.authenticate('localapikey', { session: false })(req, res, next);
 	}

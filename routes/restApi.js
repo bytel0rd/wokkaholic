@@ -74,10 +74,10 @@ module.exports = {
 				list: {
 					populate: [{
 						path: 'author',
-						selectField: 'email',
+						// selectField: 'email',
 					}, {
 						path: 'acceptedBy',
-						selectField: 'email',
+						// selectField: 'email',
 					}],
 				},
 				retrieve: {
