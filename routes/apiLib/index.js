@@ -1,5 +1,6 @@
 var express = require('express');
 var _ = require('lodash');
+var exCaResDir = require('express-cache-controller');
 
 var cursorMDW = require('./cursorMiddleware.js');
 var defaultMDW = require('./middleware.js');
@@ -46,6 +47,9 @@ function apiLib (keystone, app, config) {
 			}
 		});
 	});
+
+	router.use(exCaResDir({ noCache: true }));
+
 
 	app.use(rootRoute, router);
 }

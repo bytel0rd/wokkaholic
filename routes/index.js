@@ -22,12 +22,9 @@ var keystone = require('keystone');
 var middleware = require('./middleware');
 var importRoutes = keystone.importer(__dirname);
 var passport = require('passport');
-var _ = require('lodash');
 
-var ApiKey = keystone.list('Apikey').model;
 var restApi = require('./apiLib');
 var config = require('./restApi');
-var jwtSigner = require('./passport/jwt').signJWT;
 
 // console.log(new localApiKey.Strategy())
 // Common Middleware
@@ -46,13 +43,7 @@ exports = module.exports = function (app) {
 	require('./passport')(keystone, app, passport);
 
 	// special routes to login and signup with rest Apis
-	app.post('/api/auth/login', passport.authenticate('login'), function (req, res) {
-		return succesfullAuth(req, res);
-	});
 	app.get('/api/auth/dashboard', middleware.authorizeRoute, (req, res) => res.status(200).json(req.user));
-	app.post('/api/auth/signup', passport.authenticate('signUp'), function (req, res) {
-		return succesfullAuth(req, res);
-	});
 
 	// initialize api routes
 	restApi(keystone, app, config);
@@ -65,23 +56,3 @@ exports = module.exports = function (app) {
 	// app.get('/protected', middleware.requireUser, routes.views.protected);
 
 };
-
-function succesfullAuth (req, res) {
-	var token = jwtSigner(req.user);
-	var user = _.omit(req.user, ['password', 'isAdmin']);
-
-	ApiKey.findOne({
-		author: req.user._id,
-	})
-	.then((data) => {
-		res.status(200).json({
-			token,
-			user,
-			apiKey: data.key,
-		});
-	})
-	.then((err) => res.status(200).json({
-		token,
-		user,
-	}));
-}

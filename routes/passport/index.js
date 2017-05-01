@@ -1,7 +1,13 @@
 var express = require('express');
+const _ = require('lodash');
 
-function passportAuths(keystone, app, passport, config) {
+var jwtSigner = require('./jwt').signJWT;
+
+function passportAuths (keystone, app, passport, config) {
+
 	var User = keystone.list('User').model;
+	var ApiKey = keystone.list('Apikey').model;
+
 	if (!config) config = {};
 	var mountPath = config.root || '/auth';
 
@@ -12,42 +18,53 @@ function passportAuths(keystone, app, passport, config) {
 
 	// setting up mounts and request for various type of auth logins
 	var router = express.Router();
+	// responsible for sending user deatils and other auth details
+	var subRouter = express.Router();
 
-	router.use('/:method', function(req, res, next) {
+	router.use('/:method', function (req, res, next) {
 
 		var authMethod = req.params.method.toLowerCase();
+		var requiredUser = req.query.user === '1';
 
-		console.log(`${req.method}     ${authMethod}`)
+		console.log(`${req.method}     ${authMethod}`);
 
-		switch (req.method) {
-			case 'GET':
-				return getRequest(req, res, next);
-			case 'POST':
-				return postRequest(req, res, next);
-			default:
-				return handleErr(req, res, next);
-		}
+		// responsible for default routing of the user
+			switch (req.method) {
+				case 'GET':
+					return getRequest(req, res, next);
+				case 'POST':
+					return postRequest(req, res, next);
+				default:
+					return handleErr(req, res, next);
+			}
 
 		// hanles and error from any type of request
-		function handleErr(req, res, next) {
+		function handleErr (req, res, next) {
 			res.status(405).json({
 				err: `${req.method} is not allowed for ${authMethod}`,
 			});
 		}
 
-		// setups auth type for any get request
+		// setups auth type for any get request checks if user details
+		// is required from the query and sends it back
 		function getRequest(req, res, next) {
 			switch (authMethod) {
 				case 'apikey':
-					return passport.authenticate('localapikey', {
+					const localAKP = passport.authenticate('localapikey', {
 						session: false,
-					})(req, res, next);
+					});
+					if (requiredUser) return subRouter.use(localAKP, getUserVer)(req, res, next);
+					return localAKP(req, res, next);
 				case 'jwt':
-					return passport.authenticate('jwt', {
+					const jwtP = passport.authenticate('jwt', {
 						session: false,
-					})(req, res, next);
+					});
+					if (requiredUser) return subRouter.use(jwtP, getUserVer)(req, res, next);
+					return jwtP(req, res, next);
 				case 'facebook':
-					return passport.authenticate('facebook')(req, res, next);
+					const fbP = passport.authenticate('facebook');
+					if (requiredUser) return subRouter.use(fbP, getUserVer)(req, res, next);
+					return fbP(req, res, next);
 				case 'dashboard':
 					if (!req.user) return res.status(401).json({
 						mgs: 'please login first',
@@ -62,12 +79,45 @@ function passportAuths(keystone, app, passport, config) {
 		function postRequest(req, res, next) {
 			switch (authMethod) {
 				case 'login':
-					return passport.authenticate('login', {sucessRedirect: `/${mountPath}/dashboard`})(req, res, next);
+					if (requiredUser) {
+						return subRouter.use(passport.authenticate('login'), getUserVer)(req, res, next);
+					}
+					return passport.authenticate('login', {
+						sucessRedirect: `/${mountPath}/dashboard`
+					})(req, res, next);
 				case 'signup':
+					if (requiredUser) {
+						return subRouter.use(passport.authenticate('signUp'), getUserVer);
+					}
 					return passport.authenticate('signUp')(req, res, next);
 				default:
 					return handleErr(req, res, next);
 			}
+		}
+
+		function getUserVer(req, res, next) {
+			if (authMethod === 'dashboard') return res.status(200).json(req.user);
+			return succesfullAuth(req, res);
+		}
+
+		function succesfullAuth (req, res) {
+			var token = jwtSigner(req.user);
+			var user = _.omit(req.user, ['password', 'isAdmin']);
+
+			ApiKey.findOne({
+				author: req.user._id,
+			})
+			.then((data) => {
+				res.status(200).json({
+					token,
+					user,
+					apiKey: data.key,
+				});
+			})
+			.then((err) => res.status(200).json({
+				token,
+				user,
+			}));
 		}
 	});
 

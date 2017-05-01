@@ -24,7 +24,13 @@ Bid.add({
 		required: true,
 		initial: true,
 	},
+	offer: {
+		type: Types.Relationship,
+		ref: 'OfferRequest',
+		required: true,
+		initial: true,
+	},
 });
 
-Bid.defaultColumns = 'author, info, price';
+Bid.defaultColumns = 'author, info, price, offer';
 Bid.register();

@@ -108,7 +108,7 @@ module.exports = function localAuth(passport, Users) {
 						if(err) return;
 						return done(null, newuser);
 					});
-					
+
 					/* console.log(newuser.username + ' Registration succesful');*/
 				});
 			});
