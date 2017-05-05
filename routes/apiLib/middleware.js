@@ -11,9 +11,12 @@ exports.remapQuery = function remapQuery (req, res, next) {
 	remappedQuery = checkvalid(query, remappedQuery, 'field');
 	remappedQuery = checkvalid(query, remappedQuery, 'page');
 	remappedQuery = checkvalid(query, remappedQuery, 'sortBy');
+	remappedQuery = checkvalid(query, remappedQuery, 'skip');
+	remappedQuery = checkvalid(query, remappedQuery, 'limit');
 
 	// getting dynamic query params
-	var dynamicDBQuery = dbDynamicQuery(query, ['field', 'page', 'sortBy', 'token', 'apikey']);
+	var dynamicDBQuery = dbDynamicQuery(query, ['field', 'page', 'sortBy', 'token', 'apikey',
+		'skip', 'limit']);
 
 	// merging query params and moves to the next middleware
 	req.query = _.merge(remappedQuery, { dbQuery: dynamicDBQuery });

@@ -8,11 +8,17 @@ function cursorMiddlewares (keystone, listName, config) {
 	return {
 		// searches and returns a paginated list which matches the condition
 		list: function (req, res, next) {
-			var query = list.paginate({
-				page: req.query.page || 1,
-				perPage: 10,
-				maxPages: 10,
-			}).find(req.query.dbQuery);
+			if (req.query.page === '0') {
+				var query = list.model.find(req.query.dbQuery)
+					.limit(req.query.limit || 15)
+					.skip(req.query.skip || 0);
+			} else {
+				var query = list.paginate({
+					page: req.query.page || 1,
+					perPage: 10,
+					maxPages: 10,
+				}).find(req.query.dbQuery);
+			}
 
 			query = remapCusorQuery(req, 'list', query);
 			query.sort(req.query.sortBy);
