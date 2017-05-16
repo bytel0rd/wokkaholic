@@ -17,11 +17,6 @@ module.exports = {
 						before: [middleware.authorizeRoute],
 					},
 				},
-				update: {
-					middleware: {
-						before: [middleware.authorizeRoute],
-					},
-				},
 			},
 		},
 		Bid: {
@@ -68,7 +63,7 @@ module.exports = {
 				},
 				update: {
 					middleware: {
-						before: [middleware.authorizeRoute],
+						before: [middleware.authorizeRoute, customCursor.offerReq],
 					},
 				},
 				list: {
@@ -83,10 +78,10 @@ module.exports = {
 				retrieve: {
 					populate: [{
 						path: 'author',
-						selectField: 'email',
+						// selectField: 'email',
 					}, {
 						path: 'acceptedBy',
-						selectField: 'email',
+						// selectField: 'email',
 					}],
 
 				},

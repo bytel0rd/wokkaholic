@@ -10,15 +10,11 @@ var Account = new keystone.List('Account', {
 });
 
 Account.add({
-	bank: {
-		type: Types.Text,
-		required: true,
-		initial: true,
-	},
-	accountNo: {
+	wallet: {
 		type: Types.Number,
 		required: true,
 		initial: true,
+		default: 0,
 	},
 	author: {
 		type: Types.Relationship,
@@ -28,5 +24,5 @@ Account.add({
 	},
 });
 
-Account.defaultColumns = 'author, bank, accountNo';
+Account.defaultColumns = 'author, wallet';
 Account.register();

@@ -1,6 +1,7 @@
 var keystone = require('keystone');
 var account = keystone.list('Account').model;
 var inbox = keystone.list('Inbox');
+var mongoose = require('mongoose')
 
 exports.accountList = function (req, res, next) {
 	console.log(req.user);
@@ -9,6 +10,16 @@ exports.accountList = function (req, res, next) {
 	});
 	formatGetResponse(req, res, next, query);
 };
+
+exports.offerReq = function (req, res, next) {
+	// 'acceptedBy'
+	let acp = req.body.acceptedBy;
+	console.log(acp);
+	acp = mongoose.Types.ObjectId(acp);
+	console.log(acp)
+	req.body.acceptedBy = acp;
+	next();
+}
 
 exports.inboxList = function (req, res, next) {
 	var searchQuery = req.query.dbQuery;

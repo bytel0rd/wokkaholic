@@ -47,10 +47,12 @@ function cursorMiddlewares (keystone, listName, config) {
 		},
 		// updates and save the new model from request body
 		update: function (req, res, next) {
+			console.log(req.body)
 			List.findOneAndUpdate({
 				_id: req.params.id,
 				author: req.user._id,
 			}, req.body, { new: true }, (err, list) => {
+				console.log(list);
 				formatBodyResponse(req, res, next, err, list, 201, 406);
 			});
 		},
