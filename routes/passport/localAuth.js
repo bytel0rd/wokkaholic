@@ -1,11 +1,11 @@
 var LocalStrategy = require('passport-local').Strategy;
 var keystone = require('keystone');
-				var ApiKey = keystone.list('Apikey').model;
+var ApiKey = keystone.list('Apikey').model;
 
 // the function is exported and @{passport, usersmodel} is passed
 // has a parameter when imported
 // into the autitication route;
-module.exports = function localAuth(passport, Users) {
+module.exports = function localAuth (passport, Users) {
 	// serializeuser by holding ID for identifing specific user
 	// sends  back a key  to decrypt the user
 	// function serializingCallback(user, done) {
@@ -33,10 +33,10 @@ module.exports = function localAuth(passport, Users) {
 	// the function makes use of  two parameters @{email} @{password}
 	// and sends a err response if it failed or user if succesfull.
 	passport.use('login', new LocalStrategy({
-			passReqToCallback: true,
-			usernameField: 'email',
-			passwordField: 'password',
-		},
+		passReqToCallback: true,
+		usernameField: 'email',
+		passwordField: 'password',
+	},
 		(req, email, password, done) => {
 			// TODO: user NOT FOUND TODO: INVALID password TODO: AUTHENTICATE user
 			Users.findOne({
@@ -71,10 +71,10 @@ module.exports = function localAuth(passport, Users) {
 	// passReqToCallback: allows us to pass back the entire request to the callback
 
 	passport.use('signUp', new LocalStrategy({
-			passReqToCallback: true,
-			usernameField: 'email',
-			passwordField: 'password',
-		},
+		passReqToCallback: true,
+		usernameField: 'email',
+		passwordField: 'password',
+	},
 		(req, email, password, done) => {
 			// find a user in mongo with provided emailAddress
 			Users.findOne({
@@ -86,9 +86,7 @@ module.exports = function localAuth(passport, Users) {
 				}
 				// already exists
 				if (user) {
-					return done(null, false, {
-						message: `${req.body.email} already exists`,
-					});
+					return done(new Error(`${req.body.email} already exists`));
 				}
 				// if there is no user, create the user
 				// to  understand the user validation process
@@ -96,20 +94,16 @@ module.exports = function localAuth(passport, Users) {
 				const newuser = new Users(req.body);
 				var author = newuser._id;
 
+				var newApiKey = new ApiKey({ author });
+				newApiKey.save((err) => {
+					if (err) return done(err);
+				});
 				// save the user
 				newuser.save((saveErr) => {
 					if (saveErr) {
-						// console.log('Error in Saving user: ' + err);
-						// throw err;
-						return done(null, false, saveErr);
+						return done(saveErr);
 					}
-					var newApiKey = new ApiKey({author});
-					newApiKey.save((err) => {
-						if(err) return;
-						return done(null, newuser);
-					});
-
-					/* console.log(newuser.username + ' Registration succesful');*/
+					return done(null, newuser);
 				});
 			});
 		}));

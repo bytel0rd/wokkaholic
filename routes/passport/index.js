@@ -87,7 +87,7 @@ function passportAuths (keystone, app, passport, config) {
 					})(req, res, next);
 				case 'signup':
 					if (requiredUser) {
-						return subRouter.use(passport.authenticate('signUp'), getUserVer);
+						return subRouter.use(passport.authenticate('signUp'), getUserVer)(req, res, next);
 					}
 					return passport.authenticate('signUp')(req, res, next);
 				default:
