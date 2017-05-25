@@ -13,11 +13,11 @@ exports.accountList = function (req, res, next) {
 
 exports.offerReq = function (req, res, next) {
 	// 'acceptedBy'
-	let acp = req.body.acceptedBy;
-	console.log(acp);
-	acp = mongoose.Types.ObjectId(acp);
-	console.log(acp)
-	req.body.acceptedBy = acp;
+	// let acp = req.body.acceptedBy;
+	// console.log(acp);
+	// acp = mongoose.Types.ObjectId(acp);
+	// console.log(acp)
+	// req.body.acceptedBy = acp;
 	next();
 }
 

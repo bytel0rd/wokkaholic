@@ -69,21 +69,16 @@ module.exports = {
 				list: {
 					populate: [{
 						path: 'author',
-						// selectField: 'email',
 					}, {
 						path: 'acceptedBy',
-						// selectField: 'email',
 					}],
 				},
 				retrieve: {
 					populate: [{
 						path: 'author',
-						// selectField: 'email',
 					}, {
 						path: 'acceptedBy',
-						// selectField: 'email',
 					}],
-
 				},
 			},
 		},
@@ -121,14 +116,61 @@ module.exports = {
 					customCursor: customCursor.inboxList,
 					populate: [{
 						path: 'to',
-						// selectField: 'email',
 					}, {
 						path: 'from',
-						// selectField: 'email',
 					}],
 					middleware: {
 						before: [middleware.authorizeRoute],
 					},
+				},
+			},
+		},
+		Gig: {
+			resources: {
+				create: {
+					middleware: {
+						before: [middleware.authorizeRoute],
+					},
+				},
+				update: {
+					middleware: {
+						before: [middleware.authorizeRoute, customCursor.offerReq],
+					},
+				},
+				list: {
+					populate: [{
+						path: 'author',
+					}, {
+						path: 'acceptedBy',
+					}],
+				},
+				retrieve: {
+					populate: [{
+						path: 'author',
+					}, {
+						path: 'acceptedBy',
+					}],
+				},
+			},
+		},
+		Giger: {
+			resources: {
+				create: {
+					middleware: {
+						before: [middleware.authorizeRoute],
+					},
+				},
+				update: {
+					middleware: {
+						before: [middleware.authorizeRoute],
+					},
+				},
+				list: {
+					populate: [{
+						path: 'author',
+					}],
+				},
+				retrieve: {
 				},
 			},
 		},

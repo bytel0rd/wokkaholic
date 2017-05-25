@@ -26,8 +26,6 @@ function passportAuths (keystone, app, passport, config) {
 		var authMethod = req.params.method.toLowerCase();
 		var requiredUser = req.query.user === '1';
 
-		console.log(`${req.method}     ${authMethod}`);
-
 		// responsible for default routing of the user
 			switch (req.method) {
 				case 'GET':

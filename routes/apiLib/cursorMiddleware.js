@@ -47,12 +47,12 @@ function cursorMiddlewares (keystone, listName, config) {
 		},
 		// updates and save the new model from request body
 		update: function (req, res, next) {
-			console.log(req.body)
+			// console.log(req.body)
 			List.findOneAndUpdate({
 				_id: req.params.id,
 				author: req.user._id,
 			}, req.body, { new: true }, (err, list) => {
-				console.log(list);
+				// console.log(list);
 				formatBodyResponse(req, res, next, err, list, 201, 406);
 			});
 		},
@@ -88,7 +88,7 @@ function cursorMiddlewares (keystone, listName, config) {
 
 	// sends the new and updated data to the middleware
 	function formatBodyResponse (req, res, next, err, data, successCode, failCode) {
-		if (err) res.status(failCode || 409).json(err);
+		if (err) return res.status(failCode || 409).json(err);
 		res.local = {};
 		res.local.status = successCode || 201;
 		res.local.body = data;
