@@ -8,12 +8,13 @@ function cursorMiddlewares (keystone, listName, config) {
 	return {
 		// searches and returns a paginated list which matches the condition
 		list: function (req, res, next) {
+			var query;
 			if (req.query.page === '0') {
-				var query = list.model.find(req.query.dbQuery)
+				query = list.model.find(req.query.dbQuery)
 					.limit(req.query.limit || 15)
 					.skip(req.query.skip || 0);
 			} else {
-				var query = list.paginate({
+				query = list.paginate({
 					page: req.query.page || 1,
 					perPage: 10,
 					maxPages: 10,

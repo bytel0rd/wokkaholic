@@ -25,6 +25,7 @@ var passport = require('passport');
 
 var restApi = require('./apiLib');
 var config = require('./restApi');
+var payment = require('./payment');
 
 // console.log(new localApiKey.Strategy())
 // Common Middleware
@@ -48,6 +49,7 @@ exports = module.exports = function (app) {
 
 	// initialize api routes
 	restApi(keystone, app, config);
+	payment(app, '/api/transact/');
 	// Views
 	app.get('/', routes.views.index);
 	app.get('/gallery', routes.views.gallery);

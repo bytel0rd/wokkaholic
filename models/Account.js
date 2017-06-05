@@ -16,6 +16,10 @@ Account.add({
 		initial: true,
 		default: 0,
 	},
+	bank: Types.Text,
+	bankName: Types.Text,
+	acctNo: Types.Number,
+	subAcct: Types.Text,
 	author: {
 		type: Types.Relationship,
 		ref: 'User',

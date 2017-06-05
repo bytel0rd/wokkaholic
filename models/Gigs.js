@@ -30,8 +30,8 @@ Gig.add({
 	},
 	deliveryDate: {
 		type: Types.Textarea,
-		required: true,
-		initial: true,
+		// required: true,
+		// initial: true,
 	},
 	// attachment: {
 	// 	type: Types.LocalFile,

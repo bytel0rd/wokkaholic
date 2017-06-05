@@ -1,5 +1,6 @@
 var middleware = require('./middleware');
 var customCursor = require('./restCursor');
+var accountList = require('./payment/account');
 
 module.exports = {
 	root: '/api/v1',
@@ -7,12 +8,13 @@ module.exports = {
 		Account: {
 			resources: {
 				create: {
+					customCursor: accountList,
 					middleware: {
 						before: [middleware.authorizeRoute],
 					},
 				},
 				list: {
-					customCursor: customCursor.accountList,
+					customCursor: accountList,
 					middleware: {
 						before: [middleware.authorizeRoute],
 					},

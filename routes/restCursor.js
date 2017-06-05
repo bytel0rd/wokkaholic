@@ -1,15 +1,5 @@
 var keystone = require('keystone');
-var account = keystone.list('Account').model;
 var inbox = keystone.list('Inbox');
-var mongoose = require('mongoose')
-
-exports.accountList = function (req, res, next) {
-	console.log(req.user);
-	var query = account.findOne({
-		author: req.user._id,
-	});
-	formatGetResponse(req, res, next, query);
-};
 
 exports.offerReq = function (req, res, next) {
 	// 'acceptedBy'
@@ -19,7 +9,7 @@ exports.offerReq = function (req, res, next) {
 	// console.log(acp)
 	// req.body.acceptedBy = acp;
 	next();
-}
+};
 
 exports.inboxList = function (req, res, next) {
 	var searchQuery = req.query.dbQuery;
@@ -65,15 +55,6 @@ function formatGetResponse (req, res, next, query, successCode, failCode = 406) 
 			res.status(failCode).json(err);
 		});
 }
-
-// sends the new and updated data to the middleware
-// function formatBodyResponse(req, res, next, err, data, successCode, failCode) {
-// 	if (err) res.status(failCode || 409).json(err);
-// 	res.local = {};
-// 	res.local.status = successCode || 201;
-// 	res.local.body = data;
-// 	next();
-// }
 
 // add population to the query defined in the resource config
 function remapCusorQuery (req, listName, action, query) {
