@@ -125,12 +125,14 @@ exports.updateSubAcct = function (id, body) {
  * [description] retrieves bank list surposted
  * @return {[promise]} [description]
  */
-exports.retrieveBankList = function (perPage = 10, page = 1) {
-	return request({
-		url: `${root}/bank?perPage=${perPage}&page=${page}`,
-		method: 'GET',
-		json: true,
-		headers,
+exports.retrieveBankList = function (perPage = 30, page = 1) {
+	return new Promise(function (resolve, reject) {
+		request({
+			url: `${root}/bank?perPage=${perPage}&page=${page}`,
+			method: 'GET',
+			json: true,
+			headers,
+		}).then(d => resolve(d)).catch(e => reject(e));
 	});
 };
 

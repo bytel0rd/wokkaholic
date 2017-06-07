@@ -1,5 +1,6 @@
 var keystone = require('keystone');
 var inbox = keystone.list('Inbox');
+var user = keystone.list('User').model;
 
 exports.offerReq = function (req, res, next) {
 	// 'acceptedBy'
@@ -10,6 +11,12 @@ exports.offerReq = function (req, res, next) {
 	// req.body.acceptedBy = acp;
 	next();
 };
+
+exports.updateUser = function(req, res, next){
+	user.findOneAndUpdate({_id: req.user._id}, req.body , {upsert: true, new: true})
+		.then(d => res.status(200).json(d))
+		.catch(d => res.status(406).json(d));
+}
 
 exports.inboxList = function (req, res, next) {
 	var searchQuery = req.query.dbQuery;

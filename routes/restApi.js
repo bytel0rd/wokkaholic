@@ -13,6 +13,12 @@ module.exports = {
 						before: [middleware.authorizeRoute],
 					},
 				},
+				update: {
+					customCursor: accountList,
+					middleware: {
+						before: [middleware.authorizeRoute],
+					},
+				},
 				list: {
 					customCursor: accountList,
 					middleware: {
@@ -87,9 +93,10 @@ module.exports = {
 		User: {
 			resources: {
 				update: {
+					customCursor: customCursor.updateUser,
 					middleware: {
 						before: [middleware.authorizeRoute, function (req, res, next) {
-							req.body.isAdmin = false;
+							// req.body.isAdmin = false;
 							next();
 						}],
 					},

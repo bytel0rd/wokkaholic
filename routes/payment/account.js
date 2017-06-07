@@ -42,14 +42,14 @@ module.exports = function accountList (req, res, next) {
 	function updateAccount () {
 		return co.wrap(function * () {
 			try {
-				var acct = account.findOne({
+				var acct = yield account.findOne({
 					author: req.user._id,
 				}).populate('author');
 
 				updatePaystack(req.user);
 				body.wallet = acct.wallet;
 				body.subAcct = acct.subAcct;
-				return account.findOneAndUpdate({ author: req.user._id }, body);
+				return yield account.findOneAndUpdate({ author: req.user._id }, body);
 			} catch (e) {
 				return Promise.reject(e);
 			}

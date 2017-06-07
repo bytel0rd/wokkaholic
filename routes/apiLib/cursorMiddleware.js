@@ -52,8 +52,8 @@ function cursorMiddlewares (keystone, listName, config) {
 			List.findOneAndUpdate({
 				_id: req.params.id,
 				author: req.user._id,
-			}, req.body, { new: true }, (err, list) => {
-				// console.log(list);
+			}, req.body, { upsert: true, new: true }, (err, list) => {
+				console.log(err, list);
 				formatBodyResponse(req, res, next, err, list, 201, 406);
 			});
 		},
