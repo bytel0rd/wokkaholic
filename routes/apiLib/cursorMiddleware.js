@@ -1,3 +1,4 @@
+var _ = require('lodash');
 function cursorMiddlewares (keystone, listName, config) {
 	var List = keystone.list(listName).model;
 	var list = keystone.list(listName);
@@ -9,20 +10,38 @@ function cursorMiddlewares (keystone, listName, config) {
 		// searches and returns a paginated list which matches the condition
 		list: function (req, res, next) {
 			var query;
+
+			var dynamicFields = ['field', 'page', 'sortBy', 'token', 'apikey',
+				'skip', 'limit'];
+			var dynamicDBQuery = dbDynamicQuery(req.query, dynamicFields);
+
+			if (req.query.page) var page = parseInt(req.query.page);
+			if (req.query.skip) var skip = parseInt(req.query.skip);
+			if (req.query.limit) var limit = parseInt(req.query.limit);
+			if (req.query.sortBy) var sortBy = req.query.sortBy;
+
+			var cMgs = 'missing';
+			console.log(`dbQ: ${dynamicDBQuery}
+				page: ${page || cMgs} 
+				skip:${skip || cMgs} 
+				limit: ${limit || cMgs}
+				sortBy: ${sortBy || cMgs}
+				query: ${req.query}`);
+
 			if (req.query.page === '0') {
-				query = list.model.find(req.query.dbQuery)
-					.limit(req.query.limit || 15)
-					.skip(req.query.skip || 0);
+				query = list.model.find(dynamicDBQuery) // req.query.dbQuery
+					.limit(limit || 15)
+					.skip(skip || 0);
 			} else {
 				query = list.paginate({
-					page: req.query.page || 1,
+					page: page || 1,
 					perPage: 10,
 					maxPages: 10,
-				}).find(req.query.dbQuery);
+				}).find(dynamicDBQuery);
 			}
 
-			query = remapCusorQuery(req, 'list', query);
-			query.sort(req.query.sortBy);
+			query = remapPopulationQuery(req, 'list', query);
+			query.sort(sortBy);
 			query = new Promise(function (resolve, reject) {
 				query. exec((err, data) => {
 					resolve(data);
@@ -30,13 +49,18 @@ function cursorMiddlewares (keystone, listName, config) {
 				});
 			});
 			formatGetResponse(req, res, next, query, 200, 406);
+
+				// make the remaining query dynamic for the db to query
+			function dbDynamicQuery (query, skipKeys) {
+				return _.omit(query, skipKeys);
+			}
 		},
 		// finds the one with the id and returns it
 		retrieve: function (req, res, next) {
 			var query = List.findOne({
 				_id: req.params.id,
 			});
-			query = remapCusorQuery(req, 'retrieve', query);
+			query = remapPopulationQuery(req, 'retrieve', query);
 			formatGetResponse(req, res, next, query, 200, 406);
 		},
 		// creates and save the new model from request body
@@ -60,7 +84,7 @@ function cursorMiddlewares (keystone, listName, config) {
 	};
 
 	// add population to the query defined in the resource config
-	function remapCusorQuery (req, action, query) {
+	function remapPopulationQuery (req, action, query) {
 		if (req.query.field) query = query.select(req.query.field);
 		var populate = resource[action].populate;
 		if (populate) {

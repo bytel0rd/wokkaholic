@@ -12,11 +12,12 @@ exports.offerReq = function (req, res, next) {
 	next();
 };
 
-exports.updateUser = function(req, res, next){
-	user.findOneAndUpdate({_id: req.user._id}, req.body , {upsert: true, new: true})
+exports.updateUser = function (req, res, next) {
+	user.findOneAndUpdate({ _id: req.user._id }, req.body,
+		{ upsert: true, new: true })
 		.then(d => res.status(200).json(d))
 		.catch(d => res.status(406).json(d));
-}
+};
 
 exports.inboxList = function (req, res, next) {
 	var searchQuery = req.query.dbQuery;

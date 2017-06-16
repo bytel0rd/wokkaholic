@@ -39,7 +39,7 @@ var routes = {
 
 // Setup Route Bindings
 exports = module.exports = function (app) {
-	app.use((req, res, next) => {console.log(Date()), next()})
+	app.use((req, res, next) => { console.log(Date()); next(); });
 	// initialize passport
 	app.use(passport.initialize());
 	require('./passport')(keystone, app, passport);
