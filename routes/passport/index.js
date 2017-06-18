@@ -27,14 +27,14 @@ function passportAuths (keystone, app, passport, config) {
 		var requiredUser = req.query.user === '1';
 
 		// responsible for default routing of the user
-			switch (req.method) {
-				case 'GET':
-					return getRequest(req, res, next);
-				case 'POST':
-					return postRequest(req, res, next);
-				default:
-					return handleErr(req, res, next);
-			}
+		switch (req.method) {
+			case 'GET':
+				return getRequest(req, res, next);
+			case 'POST':
+				return postRequest(req, res, next);
+			default:
+				return handleErr(req, res, next);
+		}
 
 		// hanles and error from any type of request
 		function handleErr (req, res, next) {
@@ -45,7 +45,7 @@ function passportAuths (keystone, app, passport, config) {
 
 		// setups auth type for any get request checks if user details
 		// is required from the query and sends it back
-		function getRequest(req, res, next) {
+		function getRequest (req, res, next) {
 			switch (authMethod) {
 				case 'apikey':
 					const localAKP = passport.authenticate('localapikey', {
@@ -64,24 +64,26 @@ function passportAuths (keystone, app, passport, config) {
 					if (requiredUser) return subRouter.use(fbP, getUserVer)(req, res, next);
 					return fbP(req, res, next);
 				case 'dashboard':
-					if (!req.user) return res.status(401).json({
-						mgs: 'please login first',
-					});
-					res.status(200).json(req.user);
+					if (!req.user) {
+						return res.status(401).json({
+							mgs: 'please login first',
+						});
+					}
+					return res.status(200).json(req.user);
 				default:
 					return handleErr(req, res, next);
 			}
 		}
 
 		// setup auths for any post request
-		function postRequest(req, res, next) {
+		function postRequest (req, res, next) {
 			switch (authMethod) {
 				case 'login':
 					if (requiredUser) {
 						return subRouter.use(passport.authenticate('login'), getUserVer)(req, res, next);
 					}
 					return passport.authenticate('login', {
-						sucessRedirect: `/${mountPath}/dashboard`
+						sucessRedirect: `/${mountPath}/dashboard`,
 					})(req, res, next);
 				case 'signup':
 					if (requiredUser) {
@@ -93,7 +95,7 @@ function passportAuths (keystone, app, passport, config) {
 			}
 		}
 
-		function getUserVer(req, res, next) {
+		function getUserVer (req, res, next) {
 			if (authMethod === 'dashboard') return res.status(200).json(req.user);
 			return succesfullAuth(req, res);
 		}

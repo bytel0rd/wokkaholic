@@ -2,6 +2,9 @@ var LocalStrategy = require('passport-local').Strategy;
 var keystone = require('keystone');
 var ApiKey = keystone.list('Apikey').model;
 
+var mailer = require('./../mailer');
+var siteName = process.env.SITE_NAME || 'wokkaholic';
+
 // the function is exported and @{passport, usersmodel} is passed
 // has a parameter when imported
 // into the autitication route;
@@ -94,17 +97,32 @@ module.exports = function localAuth (passport, Users) {
 				const newuser = new Users(req.body);
 				var author = newuser._id;
 
-				var newApiKey = new ApiKey({ author });
-				newApiKey.save((err) => {
-					if (err) return done(err);
-				});
-				// save the user
-				newuser.save((saveErr) => {
-					if (saveErr) {
-						return done(saveErr);
-					}
-					return done(null, newuser);
-				});
+				// confirms valid ApiKey by sending a valid Email
+				var data = {
+					to: req.body.email,
+					subject: `${siteName} : User Registration @t ${Date()}`,
+					text: `succesfull email validation for
+					${newuser.fullName}  of id: ${newuser._id}
+					thank you for using our platform`,
+				};
+
+				mailer(data)
+					.then((d) => {
+						var newApiKey = new ApiKey({ author });
+						newApiKey.save((err) => {
+							if (err) return done(err);
+						});
+						// save the user
+						newuser.save((saveErr) => {
+							if (saveErr) {
+								return done(saveErr);
+							}
+							return done(null, newuser);
+						});
+					})
+					.catch((e) => {
+						done(new Error(`error validating email ${req.body.email}`));
+					});
 			});
 		}));
 };

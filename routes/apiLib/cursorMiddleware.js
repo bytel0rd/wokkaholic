@@ -20,13 +20,13 @@ function cursorMiddlewares (keystone, listName, config) {
 			if (req.query.limit) var limit = parseInt(req.query.limit);
 			if (req.query.sortBy) var sortBy = req.query.sortBy;
 
-			var cMgs = 'missing';
-			console.log(`dbQ: ${dynamicDBQuery}
-				page: ${page || cMgs} 
-				skip:${skip || cMgs} 
-				limit: ${limit || cMgs}
-				sortBy: ${sortBy || cMgs}
-				query: ${req.query}`);
+			// var cMgs = 'missing';
+			// console.log(`dbQ: ${dynamicDBQuery}
+			// 	page: ${page || cMgs}
+			// 	skip:${skip || cMgs}
+			// 	limit: ${limit || cMgs}
+			// 	sortBy: ${sortBy || cMgs}
+			// 	query: ${req.query}`);
 
 			if (req.query.page === '0') {
 				query = list.model.find(dynamicDBQuery) // req.query.dbQuery

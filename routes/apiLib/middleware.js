@@ -1,4 +1,4 @@
-var _ = require('lodash');
+// var _ = require('lodash');
 /**
  * this function remaps the default user query to dynamic db query
  */
