@@ -25,19 +25,19 @@ Giger.add({
 		initial: true,
 	},
 	accepted: Types.Boolean,
-		gigAuthor: {
-		type: Types.Relationship,
-		ref: 'User',
-		required: true,
-		initial: true,
-	},
+	// gigAuthor: {
+	// 	type: Types.Relationship,
+	// 	ref: 'User',
+	// 	required: true,
+	// 	initial: true,
+	// },
 	gig: {
 		type: Types.Relationship,
 		ref: 'Gig',
 		required: true,
 		initial: true,
 	},
-		expDate: {
+	expDate: {
 		type: Types.Text,
 		required: true,
 		initial: true,

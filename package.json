@@ -41,5 +41,9 @@
   "scripts": {
     "lint": "eslint .",
     "start": "node keystone.js"
+  },
+  "apidoc": {
+    "title": "wokkaholic routes documentation",
+    "url": "wokkaholic.herokuapp.com"
   }
 }

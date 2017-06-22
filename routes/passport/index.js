@@ -3,6 +3,31 @@ const _ = require('lodash');
 
 var jwtSigner = require('./jwt').signJWT;
 
+
+/**
+ *	 @apiDefine  AuthUserSuccessExample
+ *
+ * @apiSuccessExample {json} Success-Response:
+ * 	HTTP/1.1 201 created
+ * 	 	{
+ * 	 		"apikey": "random crypto key",
+ * 	 		"user": {
+ * 	 	 "_id" : ObjectId("58f3faedd54ab01c60ad5585"),
+ * 	 	 "email" : "user@keystonejs.com",
+ * 	 	 "title" : "the only paris kportk in town",
+ * 	 	 "skills" : [ ],
+ * 	 	 "aboutMe" : "a new awesome wokkaholic who enjoys good and creative work that blows mind miles away",
+ * 	 	 "dob" : "3-12-80",
+ * 	 	 "gender" : "male",
+ * 	 	 "phoneNo" : 81333984314
+ * 	 	 "fullName" : {
+ * 	 		 	"first" : "keystone",
+ * 	 		 	 "last" : "Admin"
+ *  	 	 }
+ *  	 },
+ *  	 "jwt": "randowm jwt token"
+ * 	 	}
+ */
 function passportAuths (keystone, app, passport, config) {
 
 	var User = keystone.list('User').model;
@@ -43,6 +68,37 @@ function passportAuths (keystone, app, passport, config) {
 			});
 		}
 
+		/**
+		 * @api {get} /auth/:method get authentication method
+		 * @apiName GetAuthMethod
+		 * @apiGroup AUTH
+		 *
+		 * @apiParam (param) {string=["apiKey", "jwt", "facebook"]} method  Type
+		 * @apiParam (query) {string} [user] query param when set to 1 return
+		 * @apiParam (query) {string} [apikey] apikey unique apikey for the user
+		 * @apiParam (query) {string} [token] jWT unique generated encrypted userData
+		 * the user object
+		 *
+		 * @apiDescription endpoint allows various get request authentication
+		 * facebook and google would use oAuth for userauthentication
+		 * while apikey and jwt requires their parameters to be in the headers
+		 * or query due to the stateless authentication principle of the auth
+		 * implementation credentials are of either apikey or jwt
+		 * is to be passed repeatedly for most write actions or resources
+		 * @apiUse UserSuccessRespone
+		 *
+		 * @apiuse UserSuccessExample
+		 *
+		 * @apiError UnAuthorized invalid auth credentials provided
+		 *
+		 * @apiErrorExample Error-Response:
+		 * HTTP/1.1 401 UnAuthorized
+		 * 	UnAuthorized
+		 *
+		 * HTTP/1.1 401 UnAuthorized
+		 * 	{mgs: "validation mgs"}
+		 *
+		 */
 		// setups auth type for any get request checks if user details
 		// is required from the query and sends it back
 		function getRequest (req, res, next) {
@@ -75,6 +131,48 @@ function passportAuths (keystone, app, passport, config) {
 			}
 		}
 
+		/**
+		 * @api {post} /auth/:method post authentication method
+		 * @apiName PostAuthMethod
+		 * @apiGroup AUTH
+		 *
+		 * @apiParam (param) {string=["login", "signup"]} method  Type
+		 * @apiParam (query) {string} [user] query param when set to 1 returns
+		 * the user object
+		 *
+		 * @apiParam (body) {string} email the user email used Registration
+		 * @apiParam (body) {string} password use for vaildation
+		 *
+		 * @apiParam (signup) {string} fullName fullname firstName and Lastname
+		 * @apiParam (signup) {string} gender user gender
+		 * @apiParam (signup) {string} dob date of birth of the user
+		 * @apiParam (signup) {string} [aboutMe] briefs user info for profile
+		 * @apiParam (signup) {string[]} [skills] arrays of string of skills
+		 * @apiParam (signup) {string} [title] describing user briefly
+		 * @apiParam (signup) {string} phoneNo contact phoneNo for the user
+		 *
+		 * @apiDescription endpoint allows various get request authentication
+		 * facebook and google would use oAuth for userauthentication
+		 * while apikey and jwt requires their parameters to be in the headers
+		 * or in the query for authentication due to the stateless implementation
+		 * of resources
+		 *
+		 * @apiSuccess {string} apikey unique id generated apikey
+		 * @apiSuccess {string} token unique id random generated auth atringr
+		 * @apiUse UserSuccessRespone
+		 *
+		 * @apiuse AuthUserSuccessExample
+		 *
+		 * @apiError UnAuthorized invalid auth credentials provided
+		 *
+		 * @apiErrorExample Error-Response:
+		 * HTTP/1.1 401 UnAuthorized
+		 * 	UnAuthorized
+		 *
+		 * HTTP/1.1 401 UnAuthorized
+		 * 	{mgs: "validation mgs"}
+		 *
+		 */
 		// setup auths for any post request
 		function postRequest (req, res, next) {
 			switch (authMethod) {

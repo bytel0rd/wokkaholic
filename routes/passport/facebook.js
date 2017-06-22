@@ -13,7 +13,7 @@ function facebook (passport, User) {
 		profileFields: ['id', 'displayName', 'photos', 'email'],
 		enableProof: true,
 	},
-	function(accessToken, refreshToken, profile, cb) {
+	function (accessToken, refreshToken, profile, cb) {
 		// use email and facebookId TO  updateAndCreate
 		// User.findOrCreate({
 		// 	facebookId: profile.id,

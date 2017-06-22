@@ -24,7 +24,7 @@ var importRoutes = keystone.importer(__dirname);
 var passport = require('passport');
 
 var restApi = require('./apiLib');
-var config = require('./restApi');
+var config = require('./config');
 var payment = require('./payment');
 
 // console.log(new localApiKey.Strategy())
@@ -44,9 +44,46 @@ exports = module.exports = function (app) {
 	app.use(passport.initialize());
 	require('./passport')(keystone, app, passport);
 
+	/**
+	 * @api {GET} /api/auth/dashboard get current user details
+	 * @apiName GetDashboard
+	 * @apiGroup AUTH
+	 *
+	 * @apiUse authorizeRouteHeaders
+	 *
+	 * @apiParam {string} id unique id to retrieve Category
+	 *
+	 * @apiDescription this endpoint is responsible
+	 * for retrieving the current user biodata
+	 *
+	 * @apiUse UserSuccessRespone
+	 *
+	 * @apiuse UserSuccessExample
+	 *
+	 * @apiError UnAuthorized invalid auth credentials provided
+	 *
+	 * @apiErrorExample Error-Response:
+	 * HTTP/1.1 401 UnAuthorized
+	 * 	UnAuthorized
+	 *
+	 */
 	// special routes to login and signup with rest Apis
 	app.get('/api/auth/dashboard', middleware.authorizeRoute, (req, res) => res.status(200).json(req.user));
 
+	/**
+	 * @apiDefine authorizeRouteHeaders
+	 *
+	 * @apiHeaderExample {json} header-auth-paramters
+	 * {
+	 * 	"apiKey": "my secure api key"
+	 * }
+	 *
+	 * 	OR
+	 *
+	 * {
+	 * 	"JWT_TOKEN": "my random apiker"
+	 * }
+	 */
 	// initialize api routes
 	restApi(keystone, app, config);
 	payment(app, '/api/transact/');
